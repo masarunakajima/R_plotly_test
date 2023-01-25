@@ -11,11 +11,6 @@ knit: (function(input_file, encoding) {
 
 
 
-```{r, eval=FALSE}
-library(plotly)
-plot_ly(mtcars, x=wt, y=mpg, mode="markers")
-```
-
 
 
 ## Basic Scatterplot
