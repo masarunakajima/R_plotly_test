@@ -1,0 +1,186 @@
+---
+title: "plotly"
+output: ioslides_presentation
+date: '2023-01-21'
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+    encoding=encoding,
+    output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
+---
+
+
+
+```{r, eval=FALSE}
+library(plotly)
+plot_ly(mtcars, x=wt, y=mpg, mode="markers")
+```
+
+
+
+## Basic Scatterplot
+
+```{r, echo=FALSE, message=FALSE}
+library(plotly)
+plot_ly(mtcars, x=~wt, y=~mpg)
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(plotly)
+plot_ly(mtcars, x=~wt, y=~mpg, mode="markers", color=~as.factor(cyl))
+plot_ly(mtcars, x=~wt, y=~mpg, mode="markers", color=~disp)
+plot_ly(mtcars, x=~wt, y=~mpg, mode="markers", color=~as.factor(cyl), size=~hp)
+```
+
+
+## 3D scatterplot
+```{r, echo=FALSE}
+library(plotly)
+set.seed(2016-07-21)
+temp <- rnorm(100, mean=30, sd=5)
+pressue <- rnorm(100)
+dtime <- 1:100
+plot_ly(x=temp, y = pressue, z=dtime, 
+        type="scatter3d", mode="markers",color=temp)
+```
+
+
+## line graph
+
+```{r, echo=FALSE}
+library(plotly)
+data("airmiles")
+plot_ly (x=~time(airmiles), y = ~airmiles)
+```
+
+## multiline graph
+
+```{r, eval=FALSE}
+library(plotly)
+library(tidyr)
+library(dplyr)
+data("EuStockMarkets")
+stocks <- as.data.frame(EuStockMarkets) %>%
+  gather(index, price) %>% 
+  mutate(time=rep(time(EuStockMarkets),4))
+
+plot_ly(stocks, x=~time, y=~price, color=~index)
+```
+
+## Histogram
+
+```{r, eval=FALSE}
+library(plotly)
+library(tidyr)
+library(dplyr)
+data("EuStockMarkets")
+stocks <- as.data.frame(EuStockMarkets) %>%
+  gather(index, price) %>% 
+  mutate(time=rep(time(EuStockMarkets),4))
+
+stocks_og <- as.data.frame(EuStockMarkets)
+```
+
+
+## Boxplot
+
+```{r, eval=FALSE}
+library(plotly)
+library(tidyr)
+library(dplyr)
+plot_ly(iris, y = ~Petal.Length, color=~Species, type="box")
+
+```
+
+## Heatmap
+
+```{r, eval=FALSE}
+library(plotly)
+library(tidyr)
+library(dplyr)
+
+terrain1 <- matrix(rnorm(100*100), nrow=100, ncol=100)
+plot_ly(z=~terrain1, type="heatmap")
+
+
+```
+
+
+
+## 3D surface
+
+```{r, eval=FALSE}
+library(plotly)
+library(tidyr)
+library(dplyr)
+
+terrain2 <- matrix(sort(rnorm(100*100)), nrow=100, ncol=100)
+plot_ly(z=~terrain2, type="surface")
+
+
+```
+
+
+
+## Choropleth Maps
+
+```{r, echo=FALSE, message=FALSE}
+library(dplyr)
+library(tidyr)
+state_pop <- data.frame(State=state.abb, Pop=as.vector(state.x77[,1]))
+state_pop$hover <- with(state_pop, paste(State, '<br>', "Population:", Pop))
+borders <- list(color=toRGB("red"))
+map_options <- list(scope='usa', projection = list(type='albers usa'), 
+                    showlakes=TRUE, lakecolor=toRGB('white'))
+
+plot_ly(state_pop, z=~Pop, text=~hover, locations=~State, 
+        type='choropleth', locationmode='USA-states',
+        color=~Pop, colors = "Blues", marker=list(line=borders)) %>%
+  layout(title='US Population in 1975', geo=map_options)
+
+
+state_pop$area <-state.area
+state_pop$hover_area <- with(state_pop, paste(State, '<br>', "Area:", area))
+plot_ly(state_pop, z=~area, text=~hover_area, locations=~State, 
+        type='choropleth', locationmode='USA-states',
+        color=~area, colors = "Blues", marker=list(line=borders)) %>%
+  layout(title='US state area', geo=map_options)
+
+
+```
+
+
+## ggplot and plotly
+```{r, echo=FALSE, message=FALSE}
+library(ggplot2)
+set.seed(100)
+d <- diamonds[sample(nrow(diamonds), 1000),]
+
+p <- ggplot(data=d, aes(x=carat, y=price)) +
+  geom_point(aes(text=paste("Clarity:", clarity)), size=4)+
+  geom_smooth(aes(colour=cut, fill=cut)) +facet_wrap(~cut)
+(gg <- ggplotly(p))
+
+```
+
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
